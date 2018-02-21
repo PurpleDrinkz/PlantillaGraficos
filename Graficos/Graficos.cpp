@@ -9,37 +9,27 @@
 #include "GLFW\glfw3.h"
 
 #include <iostream>
+
+#include "Vertice.h"
+#include "Shader.h"
 using namespace std;
 
 GLfloat red, green, blue;
 
+vector<Vertice> triangulo;
+GLuint posicionID;
+GLuint vertexArrayID;
+GLuint bufferID;
+
 void actualizar()
 {
-	//Aqui esta bien para actualizar los valores
-	//De la version del programa!
-
-	/*red += 0.01;
-	green += 0.02;
-	blue += 0.03;
-
-	if (red > 1) red = 0;
-	if (green > 1) green = 0;
-	if (blue > 1) blue = 0;*/
+	
 
 }
 
 void dibujar()
 {
-	glBegin(GL_TRIANGLES); //Inicia la rutina con un modo de dibujo
-	glColor3f(1.0f, 0.0f, 0.0f);
-	glVertex3f(-1.0f, 0.0f, 0.0f);
-
-	glColor3f(0.0f, 1.0f, 0.0f);
-	glVertex3f(0.0f, 1.0f, 0.0f);
-
-	glColor3f(0.0f, 0.0f, 1.0f);
-	glVertex3f(1.0f, 0.0f, 0.0f);
-	glEnd(); // Finaliza la rutina
+	
 }
 
 int main()
@@ -91,6 +81,26 @@ int main()
 	cout << "Version de OpenGL:" << version << endl;
 
 	red = green = blue = 0.0f;
+
+	//Inicializar el triangulo
+	Vertice v1 = 
+		{ vec3(-1.0f,-0.5f, 0.0f), vec4(1.0f, 1.0f, 1.0f, 1.0f) };
+	Vertice v3 =
+		{ vec3(-0.0f,0.5f, 0.0f), vec4(1.0f, 1.0f, 1.0f, 1.0f) };
+	Vertice v2 =
+		{ vec3(1.0f,-0.5f, 0.0f), vec4(1.0f, 1.0f, 1.0f, 1.0f) };
+
+	triangulo.push_back(v1);
+	triangulo.push_back(v2);
+	triangulo.push_back(v3);
+
+	//Crear instancia del shader
+	const char * rutaVertex = "vShaderSimple.shader";
+	const char * rutaFragment = "fShaderSimple.shader";
+
+
+	shader = new Shader(rutaVertex, rutaFragment);
+
 	//Ciclo de Dibujo
 	while (!glfwWindowShouldClose(window))
 	{
