@@ -20,6 +20,7 @@ vector<Vertice> triangulo;
 GLuint posicionID;
 GLuint vertexArrayID;
 GLuint bufferID;
+Shader * shader;
 
 void actualizar()
 {
@@ -29,14 +30,25 @@ void actualizar()
 
 void dibujar()
 {
-	
+	//Enlazar el shader
+	shader->enlazarShader();
+	//Especificar el vertex array
+	glBindVertexArray(vertexArrayID);
+	//dibujar
+	glDrawArrays(GL_TRIANGLES, 0, triangulo.size());
+	//Soltar el vertex array
+	glBindVertexArray(0);
+	//Soltar el shader
+	shader->desenlazarShader();
+
+
 }
 
 int main()
 {
 	//Declaración de Ventana
 	GLFWwindow *window;
-	
+
 	//Propiedades de la ventana
 	GLfloat ancho = 1024;
 	GLfloat alto = 768;
@@ -83,12 +95,12 @@ int main()
 	red = green = blue = 0.0f;
 
 	//Inicializar el triangulo
-	Vertice v1 = 
-		{ vec3(-1.0f,-0.5f, 0.0f), vec4(1.0f, 1.0f, 1.0f, 1.0f) };
+	Vertice v1 =
+	{ vec3(-1.0f,-0.5f, 0.0f), vec4(1.0f, 1.0f, 1.0f, 1.0f) };
 	Vertice v3 =
-		{ vec3(-0.0f,0.5f, 0.0f), vec4(1.0f, 1.0f, 1.0f, 1.0f) };
+	{ vec3(-0.0f,0.5f, 0.0f), vec4(1.0f, 1.0f, 1.0f, 1.0f) };
 	Vertice v2 =
-		{ vec3(1.0f,-0.5f, 0.0f), vec4(1.0f, 1.0f, 1.0f, 1.0f) };
+	{ vec3(1.0f,-0.5f, 0.0f), vec4(1.0f, 1.0f, 1.0f, 1.0f) };
 
 	triangulo.push_back(v1);
 	triangulo.push_back(v2);
@@ -98,8 +110,41 @@ int main()
 	const char * rutaVertex = "vShaderSimple.shader";
 	const char * rutaFragment = "fShaderSimple.shader";
 
-
 	shader = new Shader(rutaVertex, rutaFragment);
+
+
+	//Mapeo de atributos
+	posicionID = glGetAttribLocation(shader->getID(), "posicion");
+
+	//Desenlazar shader
+	shader->desenlazarShader();
+
+	//Crear un vertex array
+	glGenVertexArrays(1, &vertexArrayID);
+	glBindVertexArray(vertexArrayID);
+
+	//Crear vertex buffer
+	glGenBuffers(1, &bufferID);
+
+	//De aqui en adelante se trabaja con este buffer
+	glBindBuffer(GL_ARRAY_BUFFER, bufferID);
+
+	//Lenar el buffer
+	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertice)*triangulo.size(), triangulo.data(), GL_STATIC_DRAW);
+
+	//Habilitar el atributo
+	glEnableVertexAttribArray(posicionID);
+
+	//Especificar a OpenGL como usar la memoria con ese atributo
+	glVertexAttribPointer(posicionID, 3, GL_FLOAT, GL_FALSE, sizeof(Vertice), 0);
+
+	//Soltarlos
+	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+
+
+
 
 	//Ciclo de Dibujo
 	while (!glfwWindowShouldClose(window))
